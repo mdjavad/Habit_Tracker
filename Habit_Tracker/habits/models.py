@@ -7,3 +7,10 @@ class User(models.Model):
            email   =  models.EmailField() 
            date_of_birth = models.DateField() 
            password = models.CharField(max_length=128) 
+class habits(models.Model):
+    Habit_id = models.IntegerField()
+    User_id = models.IntegerField(models.ForeignKey("app.Model", verbose_name= (""), on_delete=models.CASCADE))
+    Habit_name = models.CharField() 
+    description = models.CharField()
+    duration = models.DurationFieldField()
+    reminder = models.AutoField()
