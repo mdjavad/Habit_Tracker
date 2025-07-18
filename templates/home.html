@@ -1,0 +1,31 @@
+  {% extends 'main.html' %}
+
+
+ {% block content %}
+<h1> Home page</h1>
+
+<div>
+    <a href="{% url 'Create-Habit' %}">Create Habit</a>
+</div>
+
+
+    <div>
+        {% for habit in habits %}
+        <div>
+            
+         <a href="{% url 'Update-habit' habit.id %}">Update</a>
+         <a href="{% url 'delete-habit' habit.id %}">Delete</a>
+            <h5> 
+                
+                {{habit.id}} -- <a href="{% url 'Habit' habit.id %}">{{habit.name}} </a>
+            </h5>
+            <small>{{habit.description}}</small>
+            <hr>
+        </div>
+        {% endfor %}
+    </div>
+    <br>
+    <a href="{% url 'logout' %}">Logout</a>
+
+
+{% endblock content %}
