@@ -38,11 +38,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'habits.apps.HabitsConfig'
+    'habits.apps.HabitsConfig',
+
+    'rest_framework',
+    "corsheaders",
+    
+
+
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -50,11 +57,19 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+LOGIN_URL = '/login/'
+
 LOGIN_REDIRECT_URL = '/'
 
 LOGOUT_REDIRECT_URL = '/login/'
 
 ROOT_URLCONF = 'Habit_Tracker.urls'
+
+EMAIL_HOST="smtp.gmail.com"
+EMAIL_PORT=465
+EMAIL_USE_SSL=True
+EMAIL_HOST_USER="javadmohd78@gmail.com"
+EMAIL_HOST_PASSWORD="immo llyt zfcn agtg"
 
 TEMPLATES = [
     {
@@ -96,6 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 8},  
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -104,6 +120,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
 
 
 # Internationalization
@@ -123,7 +141,15 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+CORS_ALLOW_ALL_ORIGINS = True
