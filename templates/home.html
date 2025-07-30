@@ -2,30 +2,41 @@
 
 
  {% block content %}
-<h1>Habit Tracker</h1>
+
+
 
 <div>
-    <a href="{% url 'Create-Habit' %}">Create Habit</a>
+   
+        <a href="{% url 'Create-Habit' %}" class="action-btn btn-create">Create Habit</a>
+    
 </div>
 
 
+<div>
+    {% for habit in habits %}
     <div>
-        {% for habit in habits %}
-        <div>
-            
-         <a href="{% url 'Update-habit' habit.id %}">Update</a>
-         <a href="{% url 'delete-habit' habit.id %}">Delete</a>
-            <h5> 
-                
-                {{habit.id}} -- <a href="{% url 'Habit' habit.id %}">{{habit.name}} </a>
-            </h5>
-            <small>{{habit.description}}</small>
-            <hr>
-        </div>
-        {% endfor %}
+        {% if habit.reminder %}
+            <a href="{% url 'edit_reminder' habit.reminder.id %}" class="action-btn btn-edit">Edit Reminder</a>
+        {% else %}
+            <a href="{% url 'set_reminder' habit.id %}" class="action-btn btn-edit">Set Reminder</a>
+        {% endif %}
+
+        <h5>
+            {{ habit.id }} -- <a href="{% url 'Habit' habit.id %}">{{ habit.name }}</a>
+        </h5>
+        <small>{{ habit.description }}</small><br>
+
+        <a href="{% url 'Update-habit' habit.id %}" class="action-btn btn-update">Update</a>
+        <a href="{% url 'delete-habit' habit.id %}" class="action-btn btn-delete">Delete</a>
     </div>
-    <br>
-    <a href="{% url 'logout' %}">Logout</a>
+    {% endfor %}
+</div>
+
+
+<br>
+<a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+
+
 
 
 {% endblock content %}

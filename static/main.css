@@ -5,9 +5,7 @@ body {
     font-family: Arial, sans-serif;
     font-weight: bold;
     color: black;
-   background: radial-gradient(circle at top left, #d3d3d3, #f5f5f5);
-}
-
+background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgba(202,248,255,1) 0%, rgba(186,204,227,1) 51.2%, rgba(117,144,179,1) 100.1% );
 /* Headings */
 h1, h2, h3 {
     text-align: center;
@@ -19,9 +17,9 @@ form {
     max-width: 500px;
     margin: 40px auto;
     padding: 20px;
-    background-color: white;
+    background-color: rgba(252, 255, 255, 0.87);
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(66, 66, 66, 0.1);
 }
 
 /* Labels and inputs */
@@ -62,4 +60,55 @@ input[type="submit"] {
 button:hover,
 input[type="submit"]:hover {
     background-color: #333;
+}
+
+.action-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 4px 6px;
+    text-decoration: none;
+    color: white;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.btn-edit {
+    background-color: #007bff; /* Blue */
+}
+
+.btn-update {
+    background-color: #28a745; /* Green */
+}
+
+.btn-delete {
+    background-color: #dc3545; /* Red */
+}
+
+
+.btn-create {
+    background-color: #17a2b8; /* Teal */
+}
+
+.action-btn:hover {
+    opacity: 0.85;
+}
+.logout-btn {
+    display: block;
+    width: fit-content;
+    margin: 20px auto;
+    padding: 10px 25px;
+    background-color: #2d7387;
+    color: white;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+    background-color: #b7ecec;
+}
+
 }

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'habits.apps.HabitsConfig',
+    'reminders.apps.RemindersConfig',
 
     'rest_framework',
     "corsheaders",
@@ -46,6 +47,8 @@ INSTALLED_APPS = [
 
 
 ]
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -65,6 +68,7 @@ LOGOUT_REDIRECT_URL = '/login/'
 
 ROOT_URLCONF = 'Habit_Tracker.urls'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST="smtp.gmail.com"
 EMAIL_PORT=465
 EMAIL_USE_SSL=True

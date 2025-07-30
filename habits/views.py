@@ -10,6 +10,7 @@ from django.utils import timezone
 from django.urls import reverse
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
+from reminders.models import HabitReminder
  
 
 def register_user(request):
@@ -149,12 +150,22 @@ def dashboard(request):
 
 @role_required('Admin', 'Manager', 'Developer') 
 def home(request):
-  user_id = request.session.get('user_id')
-  if not user_id:
-      return redirect('login')
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+
+    habits = Habit.objects.filter(user_id=user_id)
+    
+    for habit in habits:
+        try:
+            habit.reminder = HabitReminder.objects.get(habit=habit)
+        except HabitReminder.DoesNotExist:
+            habit.reminder = None
+    
+
+    return render(request, 'home.html', {'habits': habits})
   
-  habits = Habit.objects.filter(user_id=user_id)
-  return render(request, 'home.html', {'habits': habits})
+ 
 
 def Habit_view(request, pk):
    Habits = Habit.objects.get(pk=pk)
@@ -199,3 +210,4 @@ def DeleteHabit(request, pk):
 
    
       return render(request, 'delete.html', {'obj':Habit})
+
