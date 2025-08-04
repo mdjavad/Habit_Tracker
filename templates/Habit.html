@@ -3,8 +3,21 @@
 
  {% block content %}
 <h1> {{Habits.name}}</h1><br>
-<h5> {{Habits.description}}</h5><br>
-<h7> {{Habits.duration}}</h7>
+<h5> <a>Description: {{Habits.description}}</a>
+</h5><br>
+<h7> <a>Duration: {{Habits.duration}}</a></h7>
+<br>
 
+{% if Habits %} 
+ <center><a href="{% url 'Update-habit' Habits.id %}" class="action-btn btn-update">Update</a>
+    <a href="{% url 'delete-habit' Habits.id %}" class="action-btn btn-delete">Delete</a></center>
+<br>
+{% if Habits.reminder %} 
+<a href="{% url 'edit_reminder' Habits.reminder.id %}" class="action-btn btn-edit">Edit Reminder </a>
+{% else %} 
+<a href="{% url 'set_reminder' Habits.id %}" class="action-btn btn-edit">Set Reminder</a>
+{% endif %} 
+
+{% endif %}
 
 {% endblock content %}

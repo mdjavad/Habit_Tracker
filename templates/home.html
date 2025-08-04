@@ -15,19 +15,12 @@
 <div>
     {% for habit in habits %}
     <div>
-        {% if habit.reminder %}
-            <a href="{% url 'edit_reminder' habit.reminder.id %}" class="action-btn btn-edit">Edit Reminder</a>
-        {% else %}
-            <a href="{% url 'set_reminder' habit.id %}" class="action-btn btn-edit">Set Reminder</a>
-        {% endif %}
-
         <h5>
             {{ habit.id }} -- <a href="{% url 'Habit' habit.id %}">{{ habit.name }}</a>
         </h5>
         <small>{{ habit.description }}</small><br>
 
-        <a href="{% url 'Update-habit' habit.id %}" class="action-btn btn-update">Update</a>
-        <a href="{% url 'delete-habit' habit.id %}" class="action-btn btn-delete">Delete</a>
+      
     </div>
     {% endfor %}
 </div>
