@@ -184,16 +184,23 @@ def Habit_view(request, pk):
 
 
 def CreateHabit(request):
-     form = HabitForm() 
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
 
-     if request.method == 'POST':
+    if request.method == 'POST':
         form = HabitForm(request.POST)
         if form.is_valid():
-            form.save()
+            habit = form.save(commit=False)
+            habit.user_id = user_id  
+            habit.save()
             return redirect('home')
-        
-     context = {'form': form}
-     return render(request, 'Habit_form.html', context)
+    else:
+        form = HabitForm()
+
+    context = {'form': form}
+    return render(request, 'Habit_form.html', context)
+
 
 def UpdateHabit(request, pk):
     habit = Habit.objects.get(pk=pk)

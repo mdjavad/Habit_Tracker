@@ -29,7 +29,7 @@ class UserForm(forms.ModelForm):
 class HabitForm(forms.ModelForm):
     class Meta: 
         model = Habit
-        fields = '__all__'        
+        fields =  ['name', 'description', 'duration']       
 
 
 
