@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'habits.apps.HabitsConfig',
-    'reminders.apps.RemindersConfig',
+    
 
     'rest_framework',
     "corsheaders",

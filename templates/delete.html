@@ -5,7 +5,7 @@
 
 <form method="POST" action="">
         {% csrf_token %}
-      <p>sure want to delete "{{obj}}"?</p>
+      <p>sure want to delete this Habit?</p>
       <a href="{{request.META.HTTP_REFERER}}">Go Back</a>
         <input type="submit" value="Confirm" />
     </form>

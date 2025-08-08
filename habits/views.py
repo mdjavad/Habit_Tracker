@@ -10,7 +10,6 @@ from django.utils import timezone
 from django.urls import reverse
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
-from reminders.models import HabitReminder
 from django.http import HttpResponse
 import requests
 import json
@@ -159,12 +158,6 @@ def home(request):
 
     habits = Habit.objects.filter(user_id=user_id)
 
-    for habit in habits:
-        try:
-            habit.reminder = HabitReminder.objects.get(habit=habit)
-        except HabitReminder.DoesNotExist:
-            habit.reminder = None
-
     return render(request, 'home.html', {'habits': habits})
 
   
@@ -172,12 +165,6 @@ def home(request):
 
 def Habit_view(request, pk):
     Habits = get_object_or_404(Habit, pk=pk)
-
-    try:
-        Habits.reminder = HabitReminder.objects.get(habit=Habits)
-    except HabitReminder.DoesNotExist:
-        Habits.reminder = None
-
     return render(request, 'Habit.html', {'Habits': Habits})
 
     
