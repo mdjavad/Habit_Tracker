@@ -1,14 +1,37 @@
 {% extends 'main.html' %}
+{% block title %}Delete habit — Habit Tracker{% endblock %}
 
+{% block content %}
+<div class="page-wrapper" style="max-width:480px;">
 
- {% block content %}
+  <div class="card" style="border-color:rgba(184,84,80,0.2);">
+    <div class="card-body" style="padding:2rem;text-align:center;">
 
-<form method="POST" action="">
+      <div style="width:60px;height:60px;background:var(--rose-light);border-radius:50%;
+                  display:flex;align-items:center;justify-content:center;
+                  margin:0 auto 1.25rem;font-size:1.5rem;">🗑️</div>
+
+      <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:600;
+                 color:var(--ink);margin-bottom:8px;">Delete habit?</h2>
+
+      <p style="color:var(--ink-muted);font-size:0.9rem;max-width:300px;margin:0 auto 1.75rem;line-height:1.6;">
+        This will permanently remove
+        <strong style="color:var(--ink);">{{ obj.name }}</strong>
+        and all its history. This action cannot be undone.
+      </p>
+
+      <form method="POST" style="display:flex;flex-direction:column;gap:10px;">
         {% csrf_token %}
-      <p>sure want to delete this Habit?</p>
-      <a href="{{request.META.HTTP_REFERER}}">Go Back</a>
-        <input type="submit" value="Confirm" />
-    </form>
+        <button type="submit" class="btn btn-danger w-full">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
+          </svg>
+          Yes, delete it
+        </button>
+        <a href="{% url 'home' %}" class="btn btn-secondary w-full">Keep it</a>
+      </form>
 
-    
-{% endblock content %}
+    </div>
+  </div>
+</div>
+{% endblock %}

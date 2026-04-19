@@ -1,157 +1,79 @@
-/* ========== GLOBAL STYLES ========== */
-body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    font-weight: bold;
-    color: black;
-    background-image: radial-gradient(
-        circle farthest-corner at 10% 20%, 
-        rgba(202,248,255,1) 0%, 
-        rgba(186,204,227,1) 51.2%, 
-        rgba(117,144,179,1) 100.1%
-    );
+/*
+  Habit Tracker — main.css
+  Supplementary styles (base styles are in main.html <style> block for template portability)
+  Place this in: static/main.css
+*/
+
+/* ── Habit card animations ── */
+.habit-card {
+  animation: card-in 0.3s ease both;
 }
 
-/* Headings */
-h1, h2, h3 {
-    text-align: center;
-    margin-top: 20px;
-    margin-bottom: 10px;
-    border-bottom: none; /* removes any thin line under heading */
+.habit-card:nth-child(1)  { animation-delay: 0.04s; }
+.habit-card:nth-child(2)  { animation-delay: 0.08s; }
+.habit-card:nth-child(3)  { animation-delay: 0.12s; }
+.habit-card:nth-child(4)  { animation-delay: 0.16s; }
+.habit-card:nth-child(5)  { animation-delay: 0.20s; }
+.habit-card:nth-child(6)  { animation-delay: 0.24s; }
+.habit-card:nth-child(7)  { animation-delay: 0.28s; }
+.habit-card:nth-child(8)  { animation-delay: 0.32s; }
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Links */
-a {
-    text-decoration: none;
-    color: #0077cc;
-    font-weight: bold;
-}
-a:hover {
-    text-decoration: underline;
+/* ── Stat cards entrance ── */
+.stat-card {
+  animation: fade-up 0.4s ease both;
 }
 
-/* ========== FORM STYLING ========== */
-form {
-    width: 90%;
-    max-width: 500px;
-    margin: 40px auto;
-    padding: 20px;
-    background-color: rgba(252, 255, 255, 0.87);
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(66, 66, 66, 0.1);
+.stat-card:nth-child(1) { animation-delay: 0.0s; }
+.stat-card:nth-child(2) { animation-delay: 0.06s; }
+.stat-card:nth-child(3) { animation-delay: 0.12s; }
+.stat-card:nth-child(4) { animation-delay: 0.18s; }
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+/* ── Page entrance ── */
+.page-header {
+  animation: fade-up 0.35s ease both;
 }
 
-input[type="text"],
-input[type="number"],
-input[type="date"],
-select,
-textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-weight: normal;
-    font-size: 1rem;
-    box-sizing: border-box;
+/* ── Auth card entrance ── */
+.auth-card {
+  animation: auth-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-/* Buttons inside forms */
-button,
-input[type="submit"] {
-    display: block;
-    margin: 0 auto;
-    padding: 10px 25px;
-    background-color: #4a4a4a;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-button:hover,
-input[type="submit"]:hover {
-    background-color: #333;
+@keyframes auth-in {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* ========== HABIT LIST ITEMS ========== */
-.habit-item {
-    background: white;
-    padding: 15px;
-    margin: 10px auto;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 600px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    text-align: left;
+/* ── Focus styles ── */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #4a7c59;
+  outline-offset: 2px;
 }
 
-.habit-item a {
-    color: #0077cc;
-}
-.habit-item a:hover {
-    text-decoration: underline;
-}
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d0ccc4; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #b8b4ac; }
 
-/* ========== ACTION BUTTONS ========== */
-.action-btn {
-    display: inline-block;
-    padding: 8px 16px;
-    margin: 4px 6px;
-    text-decoration: none;
-    color: white;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-}
+/* ── Selection ── */
+::selection { background: rgba(74,124,89,0.2); color: #1a1714; }
 
-.btn-edit { background-color: #007bff; }
-.btn-update { background-color: #28a745; }
-.btn-delete { background-color: #dc3545; }
-.btn-create { background-color: #17a2b8; }
-
-.action-btn:hover {
-    opacity: 0.85;
-}
-
-/* Logout button */
-.logout-btn {
-    display: block;
-    width: fit-content;
-    margin: 20px auto;
-    padding: 10px 25px;
-    background-color: #2d7387;
-    color: white;
-    border-radius: 5px;
-    font-weight: bold;
-    text-align: center;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-}
-.logout-btn:hover {
-    background-color: #1e4f5b;
-}
-
-/* ========== RESPONSIVE DESIGN ========== */
-@media (max-width: 600px) {
-    form {
-        padding: 15px;
-    }
-    input, textarea {
-        font-size: 1rem;
-    }
-    label {
-        font-size: 0.95rem;
-    }
-    h1 {
-        font-size: 1.8rem;
-    }
+/* ── Responsive tweaks ── */
+@media (max-width: 480px) {
+  .btn-lg { padding: 12px 20px; }
+  .detail-hero { border-radius: 16px; }
 }

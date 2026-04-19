@@ -1,35 +1,181 @@
-  {% extends 'main.html' %}
+{% extends 'main.html' %}
+{% block title %}Dashboard — Habit Tracker{% endblock %}
 
+{% block content %}
+<div class="page-wrapper">
 
- {% block content %}
+  <!-- Page header -->
+  <div class="flex items-center justify-between mb-4" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 12px;">
+    <div class="page-header" style="margin-bottom:0">
+      <p class="page-eyebrow">Dashboard</p>
+      <h1 class="page-title">Your habits</h1>
+    </div>
+    <a href="{% url 'Create-Habit' %}" class="btn btn-primary btn-lg">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New habit
+    </a>
+  </div>
 
+  <!-- Stats row -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 2rem;">
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--sage);">{{ habits|length }}</div>
+      <div class="stat-label">Total habits</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--amber);" id="streak-count">—</div>
+      <div class="stat-label">Day streak</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--blue);" id="completed-today">0</div>
+      <div class="stat-label">Done today</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--rose);" id="pending-count">{{ habits|length }}</div>
+      <div class="stat-label">Pending</div>
+    </div>
+  </div>
 
+  <!-- Weekly progress -->
+  {% if habits %}
+  <div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-body">
+      <p style="font-size:0.78rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:12px;">This week</p>
+      <div class="heatmap-grid" id="week-heatmap">
+        <!-- 7 days, filled by JS -->
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;">
+        {% for day in 'MTWTFSS'|make_list %}
+        <span style="font-size:0.7rem;font-weight:600;color:var(--ink-muted);text-align:center;flex:1;">{{ day }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
 
-<div>
-   
-        <a href="{% url 'Create-Habit' %}" class="action-btn btn-create">Create Habit</a>
-    
-</div>
-
-
-<div>
+  <!-- Habit list -->
+  <div style="display: flex; flex-direction: column; gap: 10px;">
     {% for habit in habits %}
-    <div>
-        <h5>
-            {{ habit.id }} -- <a href="{% url 'Habit' habit.id %}">{{ habit.name }}</a>
-        </h5>
-        <small>{{ habit.description }}</small><br>
+    <div class="card habit-card" data-id="{{ habit.id }}" style="cursor:pointer;">
+      <div class="card-body" style="display:flex;align-items:center;gap:14px;">
 
-      
+        <!-- Check button -->
+        <button class="check-btn" data-id="{{ habit.id }}" title="Mark done today"
+          style="width:42px;height:42px;border-radius:50%;border:2px solid var(--border-dark);
+                 background:transparent;cursor:pointer;display:flex;align-items:center;
+                 justify-content:center;flex-shrink:0;transition:all 0.18s;color:var(--ink-muted);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </button>
+
+        <!-- Info -->
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <a href="{% url 'Habit' habit.id %}"
+               style="font-size:1rem;font-weight:600;color:var(--ink);text-decoration:none;
+                      transition:color var(--transition);"
+               onclick="event.stopPropagation()">
+              {{ habit.name }}
+            </a>
+            {% if habit.category %}
+              <span class="badge badge-blue">{{ habit.category }}</span>
+            {% endif %}
+          </div>
+          {% if habit.description %}
+          <p style="font-size:0.825rem;color:var(--ink-muted);margin-top:2px;
+                    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            {{ habit.description }}
+          </p>
+          {% endif %}
+        </div>
+
+        <!-- Duration + actions -->
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+          {% if habit.duration %}
+          <span class="badge badge-gray hide-mobile">{{ habit.duration }} days</span>
+          {% endif %}
+          <a href="{% url 'Update-habit' habit.id %}"
+             class="btn btn-secondary btn-sm btn-icon"
+             title="Edit" onclick="event.stopPropagation()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </a>
+          <a href="{% url 'delete-habit' habit.id %}"
+             class="btn btn-danger btn-sm btn-icon"
+             title="Delete" onclick="event.stopPropagation()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
+              <path d="M10 11v6"/><path d="M14 11v6"/>
+            </svg>
+          </a>
+        </div>
+      </div>
     </div>
     {% endfor %}
+  </div>
+
+  {% else %}
+  <!-- Empty state -->
+  <div class="empty-state">
+    <div class="empty-state-icon">🌱</div>
+    <h3>Start your first habit</h3>
+    <p>Build consistency one day at a time. Add a habit and begin your streak today.</p>
+    <a href="{% url 'Create-Habit' %}" class="btn btn-primary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Create your first habit
+    </a>
+  </div>
+  {% endif %}
+
 </div>
 
+<style>
+  .check-btn:hover {
+    background: var(--sage-light) !important;
+    border-color: var(--sage) !important;
+    color: var(--sage) !important;
+    transform: scale(1.05);
+  }
+  .check-btn.done {
+    background: var(--sage) !important;
+    border-color: var(--sage) !important;
+    color: white !important;
+  }
+  .habit-card.done-today { opacity: 0.65; }
+  .habit-card.done-today .check-btn { background: var(--sage) !important; border-color: var(--sage) !important; color: white !important; }
+</style>
 
-<br>
-<a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+<script>
+  // Simulate week heatmap
+  const heatmap = document.getElementById('week-heatmap');
+  if (heatmap) {
+    const days = [true, true, true, false, true, true, false]; // sample — replace with real backend data
+    days.forEach(done => {
+      const cell = document.createElement('div');
+      cell.className = 'heatmap-cell' + (done ? ' done' : '');
+      heatmap.appendChild(cell);
+    });
+  }
 
+  // Check button interaction
+  let completedToday = 0;
+  const totalHabits = {{ habits|length }};
 
+  document.querySelectorAll('.check-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const card = this.closest('.habit-card');
+      const isDone = card.classList.toggle('done-today');
+      completedToday = isDone ? completedToday + 1 : completedToday - 1;
+      document.getElementById('completed-today').textContent = completedToday;
+      document.getElementById('pending-count').textContent = Math.max(0, totalHabits - completedToday);
+      // TODO: AJAX to persist check — POST to /habits/{id}/complete/
+    });
+  });
 
-
-{% endblock content %}
+  // Streak placeholder
+  document.getElementById('streak-count').textContent = '{{ habits|length }}' > 0 ? '3' : '0';
+</script>
+{% endblock %}

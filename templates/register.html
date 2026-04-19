@@ -1,25 +1,57 @@
 {% extends 'main.html' %}
+{% block title %}Create account — Habit Tracker{% endblock %}
+
+{% block navbar %}{% endblock %}
 
 {% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
 
-
-
-
-
-
-
-<div>
-    <form method="POST">
-        {% csrf_token %}
-        {{form.as_p}}
-
-        <input type="submit" value="register" />
-
-    </form>
-    <p> Already signed up</p>
-    <a href="{% url 'login' %}"> login</a>
+    <div class="auth-header">
+      <div class="auth-header-icon">✨</div>
+      <h1>Start tracking</h1>
+      <p>Create your free account today</p>
     </div>
 
+    <div class="auth-body">
+      <form method="POST" novalidate>
+        {% csrf_token %}
 
+        {% if form.non_field_errors %}
+        <div style="background:var(--rose-light);border-radius:var(--radius-sm);
+                    padding:12px 14px;margin-bottom:1.25rem;border:1px solid rgba(184,84,80,0.15);">
+          {% for error in form.non_field_errors %}
+          <p style="font-size:0.85rem;color:var(--rose);font-weight:500;">{{ error }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
 
-{% endblock content %}
+        {% for field in form %}
+        <div class="form-group">
+          <label class="form-label">{{ field.label }}</label>
+          <input type="{{ field.field.widget.input_type }}"
+                 name="{{ field.html_name }}"
+                 class="form-control {% if field.errors %}error{% endif %}"
+                 placeholder="{{ field.help_text|default:'' }}"
+                 value="{{ field.value|default:'' }}"
+                 {% if field.field.required %}required{% endif %}>
+          {% if field.errors %}
+          <div class="form-error">{{ field.errors.0 }}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary w-full" style="margin-top:0.25rem;">
+          Create account
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>
+      </form>
+    </div>
+
+    <div class="auth-footer">
+      Already have an account? <a href="{% url 'login' %}">Sign in</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

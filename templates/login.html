@@ -1,23 +1,65 @@
 {% extends 'main.html' %}
+{% block title %}Sign in — Habit Tracker{% endblock %}
+
+{% block navbar %}{% endblock %}
 
 {% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
 
+    <div class="auth-header">
+      <div class="auth-header-icon">🌿</div>
+      <h1>Welcome back</h1>
+      <p>Sign in to track your habits</p>
+    </div>
 
-
-<div>
-    <form method="POST">
+    <div class="auth-body">
+      <form method="POST" novalidate>
         {% csrf_token %}
-        {{ form.as_p }}
 
-        <input type="submit" value="Login" />
+        {% if form.non_field_errors %}
+        <div style="background:var(--rose-light);border-radius:var(--radius-sm);
+                    padding:12px 14px;margin-bottom:1.25rem;border:1px solid rgba(184,84,80,0.15);">
+          {% for error in form.non_field_errors %}
+          <p style="font-size:0.85rem;color:var(--rose);font-weight:500;">{{ error }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
 
-    </form>
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input type="text" name="username" class="form-control {% if form.username.errors %}error{% endif %}"
+                 placeholder="Enter your username" value="{{ form.username.value|default:'' }}" autocomplete="username">
+          {% if form.username.errors %}
+          <div class="form-error">{{ form.username.errors.0 }}</div>
+          {% endif %}
+        </div>
 
-    <p> Create an account, </p> 
-    <a href="{% url 'register' %}">Sign Up</a>
-   <br>
-    <a href="{% url 'forgot-password' %}"> Forgot?</a>
+        <div class="form-group">
+          <label class="form-label" style="display:flex;justify-content:space-between;">
+            <span>Password</span>
+            <a href="{% url 'forgot-password' %}" style="font-weight:500;color:var(--sage);font-size:0.8rem;text-decoration:none;">
+              Forgot password?
+            </a>
+          </label>
+          <input type="password" name="password" class="form-control {% if form.password.errors %}error{% endif %}"
+                 placeholder="Enter your password" autocomplete="current-password">
+          {% if form.password.errors %}
+          <div class="form-error">{{ form.password.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full" style="margin-top:0.25rem;">
+          Sign in
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </form>
+    </div>
+
+    <div class="auth-footer">
+      Don't have an account? <a href="{% url 'register' %}">Create one free</a>
+    </div>
+
+  </div>
 </div>
-
-
-{% endblock content %}
+{% endblock %}

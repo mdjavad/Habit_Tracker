@@ -1,14 +1,116 @@
 {% extends 'main.html' %}
+{% block title %}{% if form.instance.pk %}Edit{% else %}New{% endif %} Habit — Habit Tracker{% endblock %}
 
+{% block content %}
+<div class="page-wrapper" style="max-width: 580px;">
 
- {% block content %}
-<div>
-<form method="POST" action="">
+  <!-- Back -->
+  <a href="{% url 'home' %}" style="display:inline-flex;align-items:center;gap:6px;font-size:0.85rem;font-weight:500;
+     color:var(--ink-muted);text-decoration:none;margin-bottom:1.25rem;transition:color var(--transition);"
+     onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--ink-muted)'">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Back to habits
+  </a>
+
+  <!-- Header -->
+  <div class="page-header">
+    <p class="page-eyebrow">{% if form.instance.pk %}Editing{% else %}New habit{% endif %}</p>
+    <h1 class="page-title">
+      {% if form.instance.pk %}Update "{{ form.instance.name }}"{% else %}Create a habit{% endif %}
+    </h1>
+    {% if not form.instance.pk %}
+    <p class="page-subtitle">Habits you track consistently become part of who you are.</p>
+    {% endif %}
+  </div>
+
+  <!-- Form card -->
+  <div class="card">
+    <div class="card-body" style="padding: 1.75rem;">
+      <form method="POST" action="" novalidate>
         {% csrf_token %}
-       {{form.as_p}}
-        <input type="submit" value="Create" />
-    </form>
+
+        {% for field in form %}
+        <div class="form-group">
+          <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+
+          {% if field.field.widget.input_type == 'select' %}
+            <select name="{{ field.html_name }}" id="{{ field.id_for_label }}"
+                    class="form-control {% if field.errors %}error{% endif %}">
+              {% for choice in field.field.choices %}
+              <option value="{{ choice.0 }}" {% if field.value == choice.0|stringformat:"s" %}selected{% endif %}>
+                {{ choice.1 }}
+              </option>
+              {% endfor %}
+            </select>
+          {% elif field.field.widget.input_type == 'textarea' %}
+            <textarea name="{{ field.html_name }}" id="{{ field.id_for_label }}"
+                      class="form-control {% if field.errors %}error{% endif %}"
+                      rows="3"
+                      placeholder="{{ field.help_text|default:'' }}">{{ field.value|default:'' }}</textarea>
+          {% else %}
+            <input type="{{ field.field.widget.input_type }}"
+                   name="{{ field.html_name }}"
+                   id="{{ field.id_for_label }}"
+                   value="{% if field.field.widget.input_type != 'checkbox' %}{{ field.value|default:'' }}{% endif %}"
+                   class="form-control {% if field.errors %}error{% endif %}"
+                   placeholder="{{ field.help_text|default:'' }}"
+                   {% if field.field.required %}required{% endif %}>
+          {% endif %}
+
+          {% if field.errors %}
+          {% for error in field.errors %}
+          <div class="form-error">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            {{ error }}
+          </div>
+          {% endfor %}
+          {% endif %}
+        </div>
+        {% endfor %}
+
+        <!-- Non-field errors -->
+        {% if form.non_field_errors %}
+        <div style="background:var(--rose-light);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:1rem;">
+          {% for error in form.non_field_errors %}
+          <p style="font-size:0.85rem;color:var(--rose);">{{ error }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Reminder time (extra UI) -->
+        <div class="form-group">
+          <label class="form-label">Daily reminder time <span style="color:var(--ink-muted);font-weight:400;">(optional)</span></label>
+          <input type="time" name="reminder_time" class="form-control"
+                 value="{{ form.instance.reminder_time|default:'' }}"
+                 style="max-width: 160px;">
+        </div>
+
+        <hr class="divider">
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button type="submit" class="btn btn-primary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            {% if form.instance.pk %}Save changes{% else %}Create habit{% endif %}
+          </button>
+          <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tips sidebar -->
+  {% if not form.instance.pk %}
+  <div style="margin-top:1.25rem;padding:1.1rem 1.25rem;background:var(--amber-light);
+              border-radius:var(--radius-lg);border:1px solid rgba(196,134,10,0.15);">
+    <p style="font-size:0.78rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
+              color:var(--amber);margin-bottom:8px;">💡 Tips</p>
+    <ul style="padding-left:1rem;font-size:0.85rem;color:var(--ink-soft);line-height:1.8;list-style-type:'→  ';">
+      <li>Keep habit names short and action-oriented (e.g. "Read 10 pages")</li>
+      <li>Start with 2–3 habits; consistency beats quantity</li>
+      <li>Set a specific time to anchor it to your routine</li>
+    </ul>
+  </div>
+  {% endif %}
 
 </div>
-    
-{% endblock content %}
+{% endblock %}

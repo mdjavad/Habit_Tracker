@@ -1,17 +1,138 @@
- {% extends 'main.html' %}
+{% extends 'main.html' %}
+{% block title %}{{ Habits.name }} — Habit Tracker{% endblock %}
 
+{% block content %}
+<div class="page-wrapper">
 
- {% block content %}
-<h1> {{Habits.name}}</h1><br>
-<h5> <a>Description: {{Habits.description}}</a>
-</h5><br>
-<h7> <a>Duration: {{Habits.duration}}</a></h7>
-<br>
+  <!-- Back -->
+  <a href="{% url 'home' %}" style="display:inline-flex;align-items:center;gap:6px;font-size:0.85rem;font-weight:500;
+     color:var(--ink-muted);text-decoration:none;margin-bottom:1.25rem;transition:color var(--transition);"
+     onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--ink-muted)'">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    All habits
+  </a>
 
-{% if Habits %} 
- <center><a href="{% url 'Update-habit' Habits.id %}" class="action-btn btn-update">Update</a>
-    <a href="{% url 'delete-habit' Habits.id %}" class="action-btn btn-delete">Delete</a></center>
+  <!-- Hero card -->
+  <div class="detail-hero">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+      <div>
+        <p style="font-size:0.75rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;opacity:0.7;margin-bottom:6px;">Habit</p>
+        <h1>{{ Habits.name }}</h1>
+      </div>
+      <div style="display:flex;gap:8px;position:relative;z-index:1;">
+        <a href="{% url 'Update-habit' Habits.id %}" class="btn btn-secondary btn-sm"
+           style="background:rgba(255,255,255,0.15);color:white;border-color:rgba(255,255,255,0.3);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+          Edit
+        </a>
+        <a href="{% url 'delete-habit' Habits.id %}" class="btn btn-danger btn-sm"
+           style="background:rgba(184,84,80,0.25);color:white;border-color:rgba(184,84,80,0.4);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
+          </svg>
+          Delete
+        </a>
+      </div>
+    </div>
+  </div>
 
+  <!-- Details grid -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:1.5rem;">
 
-{% endif %}
-{% endblock content %}
+    {% if Habits.description %}
+    <div class="card">
+      <div class="card-body">
+        <p style="font-size:0.72rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:6px;">Description</p>
+        <p style="font-size:0.925rem;color:var(--ink);">{{ Habits.description }}</p>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if Habits.duration %}
+    <div class="card">
+      <div class="card-body" style="text-align:center;">
+        <div style="font-family:var(--font-display);font-size:2.4rem;font-weight:600;color:var(--sage);line-height:1;">{{ Habits.duration }}</div>
+        <p style="font-size:0.72rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--ink-muted);margin-top:4px;">Day goal</p>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if Habits.category %}
+    <div class="card">
+      <div class="card-body">
+        <p style="font-size:0.72rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:6px;">Category</p>
+        <span class="badge badge-blue" style="font-size:0.85rem;padding:5px 14px;">{{ Habits.category }}</span>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if Habits.frequency %}
+    <div class="card">
+      <div class="card-body">
+        <p style="font-size:0.72rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:6px;">Frequency</p>
+        <p style="font-size:0.925rem;color:var(--ink);">{{ Habits.frequency }}</p>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- 28-day heatmap -->
+  <div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-body">
+      <p style="font-size:0.78rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:14px;">Last 28 days</p>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;" id="habit-heatmap">
+        <!-- Filled by JS -->
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:12px;">
+        <span style="font-size:0.75rem;color:var(--ink-muted);">Less</span>
+        <div style="width:14px;height:14px;border-radius:3px;background:var(--cream-dark);"></div>
+        <div style="width:14px;height:14px;border-radius:3px;background:var(--sage-light);"></div>
+        <div style="width:14px;height:14px;border-radius:3px;background:var(--sage);"></div>
+        <div style="width:14px;height:14px;border-radius:3px;background:var(--sage-dark);"></div>
+        <span style="font-size:0.75rem;color:var(--ink-muted);">More</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick-complete CTA -->
+  <div class="card" style="background:var(--sage-light);border-color:rgba(74,124,89,0.2);">
+    <div class="card-body" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+      <div>
+        <p style="font-size:0.875rem;font-weight:600;color:var(--sage-dark);">Mark today as complete?</p>
+        <p style="font-size:0.8rem;color:var(--sage);margin-top:2px;">Keep your streak going!</p>
+      </div>
+      <button id="complete-btn" class="btn btn-primary"
+              onclick="markComplete({{ Habits.id }})">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Mark done
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Sample heatmap — replace with real backend data
+  const hm = document.getElementById('habit-heatmap');
+  const levels = [0,1,2,3,2,1,0, 1,2,3,3,2,1,0, 0,1,2,3,3,2,1, 1,2,3,3,2,1,0];
+  const colors = ['var(--cream-dark)', 'var(--sage-light)', '#7eba93', 'var(--sage)'];
+  levels.forEach(v => {
+    const c = document.createElement('div');
+    c.style.cssText = `aspect-ratio:1;border-radius:4px;background:${colors[v]};transition:all 0.2s;`;
+    c.title = v > 0 ? 'Completed' : 'Not done';
+    hm.appendChild(c);
+  });
+
+  function markComplete(id) {
+    const btn = document.getElementById('complete-btn');
+    btn.textContent = '✓ Done!';
+    btn.style.background = 'var(--sage-dark)';
+    btn.disabled = true;
+    // TODO: POST to /habits/{id}/complete/
+  }
+</script>
+{% endblock %}
