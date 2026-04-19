@@ -20,6 +20,7 @@ from django.urls import reverse
 from django.contrib.auth.hashers import make_password, check_password
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST
+from functools import wraps
 import requests
 import json
 
@@ -35,7 +36,6 @@ def get_current_user(request):
 
 def login_required_view(view_func):
     """Lightweight decorator: redirect to login if no session."""
-    from functools import wraps
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
         if not request.session.get('user_id'):
@@ -229,59 +229,68 @@ def complete_habit_today(request, pk):
 
 
 # ── Push notifications ───────────────────────────────────────
-
-def showFirebaseJS(request):
-    """Serve the Firebase service worker script."""
-    config = {
-        'apiKey':            getattr(settings, 'FIREBASE_API_KEY', ''),
-        'authDomain':        getattr(settings, 'FIREBASE_AUTH_DOMAIN', ''),
-        'projectId':         getattr(settings, 'FIREBASE_PROJECT_ID', ''),
-        'storageBucket':     getattr(settings, 'FIREBASE_STORAGE_BUCKET', ''),
-        'messagingSenderId': getattr(settings, 'FIREBASE_MESSAGING_SENDER_ID', ''),
-        'appId':             getattr(settings, 'FIREBASE_APP_ID', ''),
-    }
-    data = (
-        'importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-app.js");'
-        'importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-messaging.js");'
-        f'firebase.initializeApp({json.dumps(config)});'
-        'const messaging=firebase.messaging();'
-        'messaging.setBackgroundMessageHandler(function(payload){'
-        '  const n=payload.notification;'
-        '  return self.registration.showNotification(n.title,{body:n.body,icon:n.icon});'
-        '});'
-    )
-    return HttpResponse(data, content_type='text/javascript')
-
-
-def save_fcm_token(request):
-    """Save a user's FCM registration token."""
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        token = data.get('token')
-        user_id = request.session.get('user_id')
-        if token and user_id:
-            User.objects.filter(pk=user_id).update(fcm_token=token)
-        return JsonResponse({'ok': True})
-    return JsonResponse({'ok': False}, status=400)
-
-
-def send_notification(registration_ids, message_title, message_desc):
+def send_notification(player_ids, message_title, message_desc):
     """
-    Send a push notification via FCM.
-    IMPORTANT: Store the server key in settings.FCM_SERVER_KEY — never hardcode it.
+    Send push notification via OneSignal (free FCM alternative).
+    Set ONESIGNAL_APP_ID and ONESIGNAL_API_KEY in settings.py
     """
-    fcm_key = getattr(settings, 'FCM_SERVER_KEY', '')
-    if not fcm_key:
-        print('FCM_SERVER_KEY not set in settings')
+    app_id  = getattr(settings, 'ONESIGNAL_APP_ID', '')
+    api_key = getattr(settings, 'ONESIGNAL_API_KEY', '')
+
+    if not app_id or not api_key:
+        print('OneSignal credentials not configured in settings')
         return
 
     result = requests.post(
-        'https://fcm.googleapis.com/fcm/send',
-        headers={'Content-Type': 'application/json', 'Authorization': f'key={fcm_key}'},
-        data=json.dumps({
-            'registration_ids': registration_ids,
-            'priority': 'high',
-            'notification': {'title': message_title, 'body': message_desc},
-        })
+        'https://onesignal.com/api/v1/notifications',
+        headers={
+            'Content-Type': 'application/json',
+            'Authorization': f'Basic {api_key}',
+        },
+        json={
+            'app_id': app_id,
+            'include_player_ids': player_ids,   # replaces FCM registration_ids
+            'headings': {'en': message_title},
+            'contents': {'en': message_desc},
+        }
     )
     print(result.json())
+
+
+# ── OneSignal ────────────────────────────────────────────────
+
+def save_onesignal_player(request):
+    """Save OneSignal player_id when user subscribes to notifications."""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            player_id = data.get('player_id')
+            user_id = request.session.get('user_id')
+            if player_id and user_id:
+                User.objects.filter(pk=user_id).update(onesignal_player_id=player_id)
+                return JsonResponse({'ok': True})
+            return JsonResponse({'ok': False, 'error': 'Missing player_id or not logged in'}, status=400)
+        except Exception as e:
+            return JsonResponse({'ok': False, 'error': str(e)}, status=400)
+    return JsonResponse({'ok': False}, status=405)
+
+
+@login_required_view
+def send(request):
+    """Test view — visit this URL to send yourself a test notification."""
+    user_id = request.session['user_id']
+    user = User.objects.get(pk=user_id)
+
+    if not user.onesignal_player_id:
+        return HttpResponse(
+            '❌ No player ID saved yet.<br>'
+            'Make sure you clicked <b>Allow</b> on the notification bell first.',
+            status=400
+        )
+
+    send_notification(
+        [user.onesignal_player_id],
+        '🔔 Habit Reminder',
+        'Time to check your habits for today!'
+    )
+    return HttpResponse('✅ Notification sent! Check your browser.')

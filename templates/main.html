@@ -582,7 +582,7 @@
 
 {% block content %}{% endblock %}
 
-<!-- Firebase Push Init -->
+ <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   var firebaseConfig = {
     apiKey: "AIzaSyAdGLgTWNFB91sq_3vascE_E-Z4_dshBxU",
@@ -635,6 +635,31 @@
       }, 4500);
     });
   });
+     window.OneSignalDeferred = window.OneSignalDeferred || [];
+
+    // Initialize OneSignal
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "45620cf2-b3bf-4669-b470-ddf2ae8ad25c",
+        notifyButton: { enable: true },  // shows bell icon bottom-right
+      });
+    });
+
+    // Save player_id to Django when user subscribes
+    OneSignalDeferred.push(function(OneSignal) {
+      OneSignal.User.PushSubscription.addEventListener("change", function(event) {
+        if (event.current.optedIn) {
+          fetch('/save-player-id/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({ player_id: event.current.id })
+          });
+        }
+      });
+    });
 </script>
 
 </body>
