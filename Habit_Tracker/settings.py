@@ -4,9 +4,11 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(BASE_DIR / '.env')  # ← explicit path, not just load_dotenv()
+# Loads .env locally — silently skipped on Render (uses dashboard env vars instead)
+env_file = BASE_DIR / '.env'
+if env_file.exists():
+    load_dotenv(env_file)
 
-# AFTER (safe fallback for development)
 SECRET_KEY = os.environ.get(
     'DJANGO_SECRET_KEY',
     'django-insecure-8m#=%$@v*he^qt0qny(hmc+3&=bk2sx234cg=o8rgw16+(0kee'
